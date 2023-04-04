@@ -14,37 +14,43 @@ services:
 
 
 # Auth service
-  auth:       
-      build:
-        context: ./
-        dockerfile: ./apps/auth/Dockerfile
-      env_file:
-        - .env
-      depends_on:
-        - rabbitmq
-      volumes:
-        - .:/usr/src/app # any change to base folder should be reflected
-        - /usr/src/app/node_modules
-      command: npm run start:dev auth # overrides CMD from dockerfile
+  # auth:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/auth/Dockerfile
+  #     target: development
+  #   command: npm run start:dev auth
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - mongodb
+  #     - rabbitmq
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   ports:
+  #     - '3000:3000'
   
   # API Getway
-  api:
-    build:
-      context: ./
-      dockerfile: ./apps/api/Dockerfile
-    ports:
-      - '4000:5000'
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - auth
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: npm run start:dev api
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #     target: development
+  #   command: npm run start:dev orders
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - mongodb
+  #     - auth
+  #     - rabbitmq
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   ports:
+  #     - '3000:3000'
 
-
+#  Mongodb
   mongodb:
     image: mongo
     restart: always
