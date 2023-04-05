@@ -27,7 +27,6 @@ export class AuthService implements IAuthService {
     const existingUser = await this.usersRepository.findByCondition({
       where: {
         email: createUserParam.email,
-        username: createUserParam.username,
       },
     });
     if (existingUser)
