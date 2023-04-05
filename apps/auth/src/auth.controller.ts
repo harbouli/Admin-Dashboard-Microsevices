@@ -1,7 +1,13 @@
 import { Controller, Inject } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Ctx, MessagePattern, RmqContext } from '@nestjs/microservices';
+import {
+  Ctx,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { Services, SharedService } from '@app/shared';
+import { CreateUserType } from './types/user.type';
 
 @Controller()
 export class AuthController {
@@ -12,12 +18,14 @@ export class AuthController {
     private readonly sharedService: SharedService,
   ) {}
 
-  @MessagePattern({ cdm: 'login-user' })
-  async login(@Ctx() context: RmqContext) {
-    const channel = context.getMessage();
-    const orginalMessage = context.getMessage();
+  @MessagePattern({ cmd: 'create-user' })
+  async createUser(
+    @Ctx() context: RmqContext,
+    @Payload() createUser: CreateUserType,
+  ) {
+    console.log('first');
+    this.sharedService.acknowledgeMessage(context);
 
-    channel.ack(orginalMessage);
-    return { User: 'USERNAme' };
+    return this.authService.createUser(createUser);
   }
 }
