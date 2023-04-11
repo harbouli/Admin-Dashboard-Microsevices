@@ -24,12 +24,17 @@ export class AuthService implements IAuthService {
 
   async createUser(createUserParam: CreateUserType): Promise<Tokens> {
     // Check If User id already Exist
-    const existingUser = await this.usersRepository.findByCondition({
+    const existingUserEmail = await this.usersRepository.findByCondition({
       where: {
         email: createUserParam.email,
       },
     });
-    if (existingUser)
+    const existingUsername = await this.usersRepository.findByCondition({
+      where: {
+        email: createUserParam.email,
+      },
+    });
+    if (existingUserEmail || existingUsername)
       throw new HttpException('User Is Already Exists', HttpStatus.CONFLICT);
 
     // Hach Password
@@ -43,6 +48,7 @@ export class AuthService implements IAuthService {
       password: hashedPassword,
     });
     Logger.log('Creating User ...');
+    Logger.log(newUser);
     const user = await this.usersRepository.save(newUser);
 
     const token = await this.getTokens({

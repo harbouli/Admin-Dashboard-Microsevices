@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -12,39 +12,30 @@ services:
     env_file:
       - .env
 
-  # Auth service
-  # auth:
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/auth/Dockerfile
-  #     target: development
-  #   command: npm run start:dev auth
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - mongodb
-  #     - rabbitmq
-  #   volumes:
-  #     - .:/usr/src/app
-  #     - /usr/src/app/node_modules
-  #   ports:
-  #     - '3000:3000'
-
-  # API Getway
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/api/Dockerfile
-  #     target: development
-  #   command: npm run start:dev orders
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - mongodb
-  #     - auth
-  #     - rabbitmq
-  #   volumes:
-  #     - .:/usr/src/app
-  #     - /usr/src/app/node_modules
-  #   ports:
-  #     - '3000:3000'
+  #  Mongodb
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - server-network
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./database/db:/data/db
+      - ./database/dev.archive:/Databases/dev.archive
+      - ./database/production:/Databases/production
+  mongo-express:
+    image: mongo-express
+    container_name: mexpress
+    env_file:
+      - .env
+    networks:
+      - server-network
+    links:
+      - mongo
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
